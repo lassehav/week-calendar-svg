@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Test</title>
+
+        <script src="raphael-min.js"></script>
+        
+        <script>
+		var paper;	
+
+		var height = 400;
+		var width = 960;
+		var timeRows= 11;
+		var headerRows = 1;
+		var totalVerticalRows = timeRows + headerRows;
+		var rowHeight = height / totalVerticalRows;
+		var daySlots = 7;
+		var dayWidth = width / daySlots;
+		var colorAikuiset = "rgb(204,204,204)";
+		var colorJunnut = "rgb(146,240,152)";
+		var colorMinit = "rgb(146,229,240)";
+		var colorLapset = "rgb(255,255,148)";			
+		var colorHM = "rgb(255,163,71)";
+		
+		var inputData = [
+						{
+							text: "Junnut\n17-19",
+							startTime: 17,
+							endTime: 19,
+							day: 1,
+							color: colorJunnut
+						},
+						{
+							text: "UM\nperuskurssi\n19-21",
+							startTime: 19,
+							endTime: 21,
+							day: 1,
+							color: colorAikuiset
+						},
+						{
+							text: "Viikkokisa\n19-21",
+							startTime: 19,
+							endTime: 21,
+							day: 1,
+							color: colorAikuiset
+							
+						},
+						{
+							text: "Minijuniorit\n10-13v\n17-18.30",
+							startTime: 17,
+							endTime: 18.5,
+							day: 2,
+							color: colorMinit
+						},
+						{
+							text: "Kalpa\n18.30-20",
+							startTime: 18.5,
+							endTime: 20,
+							day: 2,
+							color: colorAikuiset
+						},
+						{
+							text: "Hist.miekkailun\nperuskurssi\n20-21.30",
+							startTime: 20,
+							endTime: 21.50,
+							day: 2,
+							color: colorHM
+						},
+						{
+							text: "Alkeiskurssi\n10-13v\n17-18.30",
+							startTime: 17,
+							endTime: 18.50,
+							day: 3,
+							color: colorMinit
+						},
+						{
+							text: "Alkeisjatko\n10-13v\n17-18.30",
+							startTime: 17,
+							endTime: 18.50,
+							day: 3,
+							color: colorMinit
+						},
+						{
+							text: "Junnukisa\n18.30-19.30",
+							startTime: 18.5,
+							endTime: 19.5,
+							day: 3,
+							color: colorJunnut
+						},
+						{
+							text: "Säilä\n18.30-20",
+							startTime: 18.5,
+							endTime: 20,
+							day: 3,
+							color: colorAikuiset
+						},
+						{
+							text: "Floretti\n19.30-21",
+							startTime: 19.5,
+							endTime: 21,
+							day: 3,
+							color: colorAikuiset
+						},
+						{
+							text: "Junnut\n17-19",
+							startTime: 17,
+							endTime: 19,
+							day: 4,
+							color: colorJunnut
+						},
+						{
+							text: "Pyörätuoli\n18-19",
+							startTime: 18,
+							endTime: 19,
+							day: 4,
+							color: colorAikuiset
+						},
+						{
+							text: "Yhteistreenit\nFKS\n19-21",
+							startTime: 19,
+							endTime: 21,
+							day: 4,
+							color: colorAikuiset
+						},
+						{
+							text: "Minijuniorit\n10-13v\n17-18.30",
+							startTime: 17,
+							endTime: 18.5,
+							day: 5,
+							color: colorMinit
+						},
+						{
+							text: "Fysiikkatreenit\n18.30-19.15",
+							startTime: 18.5,
+							endTime: 19.25,
+							day: 5,
+							color: colorAikuiset
+						},
+						{
+							text: "Historiallinen\nmiekkailu\n19.15-21",
+							startTime: 19.25,
+							endTime: 21,
+							day: 5,
+							color: colorHM
+						},
+						{
+							text: "Pojat 6-7v\n11.30-12.30",
+							startTime: 11.5,
+							endTime: 12.5,
+							day: 6,
+							color: colorLapset
+						},
+						{
+							text: "Poikien kerho\n8-9v\n12.30-14",
+							startTime: 12.5,
+							endTime: 14,
+							day: 6,
+							color: colorLapset
+						},
+						{
+							text: "Tyttöjen kerho\n6-9v\n14-15.30",
+							startTime: 14,
+							endTime: 15.5,
+							day: 6,
+							color: colorLapset
+						},
+						{
+							text: "Teatteri-\nmiekkailu\n15.30-17",
+							startTime: 15.5,
+							endTime: 17,
+							day: 6,
+							color: colorAikuiset
+						},
+						{
+							text: "Historiallinen\nmiekkailu\n16-18",
+							startTime: 16,
+							endTime: 18,
+							day: 7,
+							color: colorHM
+						},
+						{
+							text: "Veteraanit\n18-20",
+							startTime: 18,
+							endTime: 20,
+							day: 7,
+							color: colorAikuiset
+						}
+						
+					];
+
+		function test()
+		{
+			var days = new Array("Maanantai", "Tiistai", "Keskiviikko", "Torstai", "Perjantai", "Lauantai", "Sunnuntai");
+			var times = new Array("", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22");
+			
+		
+			// Creates canvas 320 × 200 at 10, 10
+			paper = Raphael(10, 10, width, height);
+
+			var mainrect = paper.rect(0,0,width, height);
+			mainrect.attr("stroke", "#000000");
+			
+			
+			// Draw row lines
+			for(var i = 1; i < totalVerticalRows; i++)
+			{
+				var pathCommand = "M0," + rowHeight * i + "L" + width + "," + rowHeight * i;
+				var rowLine = paper.path(pathCommand);
+				rowLine.attr("stroke", "#444444");				
+			}
+			
+			// Draw lines to separate days
+			for(var i = 0; i < daySlots; i++)
+			{
+				var pathCommand = "M" + dayWidth * i + ",0L" + dayWidth * i + "," + height;
+				var dayLine = paper.path(pathCommand);
+				dayLine.attr("stroke", "#000000");
+				
+				paper.text(dayWidth * i + dayWidth / 2, rowHeight / 2, days[i]);
+			}				
+				
+			
+			/* Find places for each event */
+			for(var x = 0; x < inputData.length; x++)
+			{		
+				var thisStart = inputData[x].startTime;
+				var thisEnd = inputData[x].endTime;
+				
+				for(var y = 1; y < inputData.length; y++)
+				{				
+					if(x == y)
+					{
+						break;
+					}
+					
+					if(inputData[x].day != inputData[y].day)
+					{
+						continue;
+					}
+					
+					if(inputData[x].half != "true")
+					{
+						if((thisStart <= inputData[y].startTime) && (thisEnd > inputData[y].startTime))
+						{
+							inputData[x].half = "true";
+							inputData[x].pos = "left";
+		
+							inputData[y].half = "true";
+							inputData[y].pos = "right";
+						}
+						else if( (thisStart < inputData[y].endTime) && (thisStart > inputData[y].startTime) )
+						{
+							if(inputData[y].half == "true")
+							{
+								inputData[x].half = "true";
+								
+								if(inputData[y].pos == "left")
+								{									
+									inputData[x].pos = "right";
+								}
+								else
+								{								
+									inputData[x].pos = "left";
+								}								
+							}
+							else
+							{
+								inputData[y].half = "true";
+								inputData[y].pos = "right";
+								inputData[x].half = "true";
+								inputData[x].pos = "left";
+							}
+						}
+					}						
+				}
+			}
+
+			/* Draw the events */
+			for(var x = 0; x < inputData.length; x++)
+			{
+				if(inputData[x].half == "true")
+				{
+					addEvent(inputData[x].text, inputData[x].day, inputData[x].startTime, inputData[x].endTime, inputData[x].color, true, inputData[x].pos);
+				}
+				else
+				{
+					addEvent(inputData[x].text, inputData[x].day, inputData[x].startTime, inputData[x].endTime, inputData[x].color, false);
+				}
+			}
+		}
+
+		function addEvent(name, day, startTime, endTime, bgColor, half, side)
+		{
+			startTime = Math.round(startTime * 100) / 100;
+			
+			// Minus one here because the first day, Monday, is expressed with number 1
+			day = day-1;
+			
+			var xCoord = day * dayWidth;
+			if((half == true) && (side == "right"))
+			{
+				xCoord += dayWidth / 2;
+			}
+			var yCoord = headerRows * rowHeight + (startTime - timeRows) * rowHeight;
+			var eventHeight = (endTime - startTime) * rowHeight;
+			
+			var eventRect;
+			if(half)
+			{
+				eventRect = paper.rect(xCoord, yCoord, dayWidth / 2, eventHeight);
+				paper.text(xCoord + dayWidth/4, yCoord + eventHeight/2, name);	
+			}
+			else
+			{
+				eventRect = paper.rect(xCoord, yCoord, dayWidth, eventHeight);
+				paper.text(xCoord + dayWidth/2, yCoord + eventHeight/2, name);	
+			}
+			
+			eventRect.attr("fill", bgColor);
+			eventRect.attr("stroke", "#111111");				
+		}
+		
+		</script>
+    </head>
+    <body onload="test()">
+        
+    </body>
+</html>
